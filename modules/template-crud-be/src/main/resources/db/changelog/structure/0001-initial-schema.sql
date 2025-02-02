@@ -26,43 +26,34 @@ CREATE TABLE categories (
 CREATE TABLE books (
     book_id SERIAL PRIMARY KEY,
     book_name VARCHAR(255) NOT NULL,
-    author_id INT REFERENCES authors(author_id),
-    cat_id INT REFERENCES categories(cat_id),
+    author_id INT REFERENCES authors(author_id) ON DELETE CASCADE,
+    cat_id INT REFERENCES categories(cat_id) ON DELETE CASCADE,
     book_price DECIMAL(10,2) NOT NULL
 );
 
 -- 📌 Book Copies Table (Physical copies of books)
 CREATE TABLE book_copies (
     copy_id SERIAL PRIMARY KEY,
-    book_id INT REFERENCES books(book_id),
-    status VARCHAR(20) CHECK (status IN ('Available', 'Borrowed', 'Reserved')) DEFAULT 'Available'
+    book_id INT REFERENCES books(book_id) ON DELETE CASCADE,
+    status VARCHAR(20) CHECK (status IN ('Available', 'Borrowed')) DEFAULT 'Available'
 );
 
 -- 📌 Borrowing Table (Tracks which user borrowed which copy)
 CREATE TABLE borrowed_books (
     borrow_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(user_id),
-    copy_id INT REFERENCES book_copies(copy_id),
+    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    copy_id INT REFERENCES book_copies(copy_id) ON DELETE CASCADE,
     borrow_date TIMESTAMP DEFAULT NOW(),
-    due_date TIMESTAMP,  -- NEW: When should the book be returned
+    due_date TIMESTAMP,  -- When should the book be returned
     return_date TIMESTAMP,
-    fine_amount DECIMAL(10,2) DEFAULT 0 -- NEW: Fine imposed for overdue books
-);
-
--- 📌 Reservations Table (Users can reserve books)
-CREATE TABLE reservations (
-    reservation_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(user_id),
-    copy_id INT REFERENCES book_copies(copy_id),
-    reservation_date TIMESTAMP DEFAULT NOW(),
-    status VARCHAR(20) CHECK (status IN ('Pending', 'Completed', 'Cancelled')) DEFAULT 'Pending'
+    fine_amount DECIMAL(10,2) DEFAULT 0 -- Fine imposed for overdue books
 );
 
 -- 📌 Fines Table (Tracks fines imposed for overdue books)
 CREATE TABLE fines (
     fine_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(user_id),
-    borrow_id INT REFERENCES borrowed_books(borrow_id),
+    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    borrow_id INT REFERENCES borrowed_books(borrow_id) ON DELETE CASCADE,
     fine_amount DECIMAL(10,2) NOT NULL,
     status VARCHAR(20) CHECK (status IN ('Unpaid', 'Paid')) DEFAULT 'Unpaid'
 );

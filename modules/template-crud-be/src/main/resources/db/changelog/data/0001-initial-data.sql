@@ -30,10 +30,6 @@ INSERT INTO book_copies (book_id, status) VALUES
 INSERT INTO borrowed_books (user_id, copy_id, borrow_date, due_date, return_date, fine_amount) VALUES
 (1, 3, '2024-02-01 10:00:00', '2024-02-15 10:00:00', NULL, 0); -- Alice borrowed a book
 
--- 📌 Insert Reservations
-INSERT INTO reservations (user_id, copy_id, reservation_date, status) VALUES
-(2, 3, '2024-02-02 12:00:00', 'Pending'); -- Bob reserved a borrowed book
-
 -- 📌 Insert Fines (If overdue)
 INSERT INTO fines (user_id, borrow_id, fine_amount, status) VALUES
 (1, 1, 5.00, 'Unpaid'); -- Alice has a fine
