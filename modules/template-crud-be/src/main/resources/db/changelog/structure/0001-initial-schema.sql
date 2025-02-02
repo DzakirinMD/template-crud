@@ -1,54 +1,68 @@
 -- Changeset dzakirin:0001-initial-structure
 
--- Create `users` table
+-- 📌 Users Table
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
+    user_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    mobile BIGINT NOT NULL UNIQUE,
-    address TEXT NOT NULL
+    mobile VARCHAR(20) NOT NULL,
+    address TEXT
 );
 
--- Create `authors` table
+-- 📌 Authors Table
 CREATE TABLE authors (
     author_id SERIAL PRIMARY KEY,
     author_name VARCHAR(255) NOT NULL
 );
 
--- Create `categories` table
+-- 📌 Categories Table
 CREATE TABLE categories (
     cat_id SERIAL PRIMARY KEY,
     cat_name VARCHAR(255) NOT NULL
 );
 
--- Create `books` table (Stores book titles, not physical copies)
+-- 📌 Books Table
 CREATE TABLE books (
     book_id SERIAL PRIMARY KEY,
     book_name VARCHAR(255) NOT NULL,
-    author_id INT NOT NULL,
-    cat_id INT NOT NULL,
-    book_price DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (author_id) REFERENCES authors(author_id) ON DELETE CASCADE,
-    FOREIGN KEY (cat_id) REFERENCES categories(cat_id) ON DELETE CASCADE
+    author_id INT REFERENCES authors(author_id),
+    cat_id INT REFERENCES categories(cat_id),
+    book_price DECIMAL(10,2) NOT NULL
 );
 
--- Create `book_copies` table (Represents physical copies of books)
+-- 📌 Book Copies Table (Physical copies of books)
 CREATE TABLE book_copies (
     copy_id SERIAL PRIMARY KEY,
-    book_id INT NOT NULL,
-    status VARCHAR(50) DEFAULT 'Available',  -- Available, Borrowed, Lost, etc.
-    FOREIGN KEY (book_id) REFERENCES books(book_id) ON DELETE CASCADE
+    book_id INT REFERENCES books(book_id),
+    status VARCHAR(20) CHECK (status IN ('Available', 'Borrowed', 'Reserved')) DEFAULT 'Available'
 );
 
--- Create `borrowed_books` (Tracks borrowing of book copies)
+-- 📌 Borrowing Table (Tracks which user borrowed which copy)
 CREATE TABLE borrowed_books (
     borrow_id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL,
-    copy_id INT NOT NULL,
-    borrow_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    return_date TIMESTAMP NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (copy_id) REFERENCES book_copies(copy_id) ON DELETE CASCADE,
-    CONSTRAINT unique_borrow UNIQUE (user_id, copy_id, borrow_date)
+    user_id INT REFERENCES users(user_id),
+    copy_id INT REFERENCES book_copies(copy_id),
+    borrow_date TIMESTAMP DEFAULT NOW(),
+    due_date TIMESTAMP,  -- NEW: When should the book be returned
+    return_date TIMESTAMP,
+    fine_amount DECIMAL(10,2) DEFAULT 0 -- NEW: Fine imposed for overdue books
+);
+
+-- 📌 Reservations Table (Users can reserve books)
+CREATE TABLE reservations (
+    reservation_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id),
+    copy_id INT REFERENCES book_copies(copy_id),
+    reservation_date TIMESTAMP DEFAULT NOW(),
+    status VARCHAR(20) CHECK (status IN ('Pending', 'Completed', 'Cancelled')) DEFAULT 'Pending'
+);
+
+-- 📌 Fines Table (Tracks fines imposed for overdue books)
+CREATE TABLE fines (
+    fine_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id),
+    borrow_id INT REFERENCES borrowed_books(borrow_id),
+    fine_amount DECIMAL(10,2) NOT NULL,
+    status VARCHAR(20) CHECK (status IN ('Unpaid', 'Paid')) DEFAULT 'Unpaid'
 );
