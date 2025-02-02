@@ -102,3 +102,43 @@ CREATE TABLE fines (
 
 - 🔹 If a book is returned late, a fine is calculated.
 - 🔹 The user must pay the fine before borrowing again.
+
+
+Awesome! 🚀 Below is the Spring Boot API structure for managing the Library Management System based on our refactored schema.
+
+## 📌 Spring Boot Implementation Plan
+
+1. User Management (Register, Get Users)
+2. Book Management (Add Books, Get Books, Get Book Copies)
+3. Borrowing Management (Borrow a Book, Return a Book)
+4. Fines Management (View and Pay Fines)
+
+### 📦 Tech Stack
+✅ Spring Boot <br>
+✅ Spring Data JPA <br>
+✅ PostgreSQL <br>
+✅ Lombok (for clean models) <br>
+✅ Spring Validation <br>
+✅ RESTful API with OpenAPI (Swagger) <br>
+
+## Project Structure
+📂 library-management
+┣ 📂 src/main/java/com/example/library
+┃ ┣ 📂 controller        # Handles API requests
+┃ ┣ 📂 service           # Business logic
+┃ ┣ 📂 repository        # JPA Repositories (Spring Data)
+┃ ┣ 📂 entity            # JPA Entities (Mapped to DB tables)
+┃ ┣ 📂 dto               # Data Transfer Objects (DTOs)
+┃ ┗ 📂 config            # App configuration (Swagger, Database)
+┣ 📂 src/main/resources
+┃ ┗ 📜 application.yml   # Database Configurations
+┣ 📜 pom.xml             # Dependencies
+┗ 📜 README.md
+
+## Swagger
+http://localhost:10000/swagger-ui.html
+
+## Further enhancement
+- restructure back the project structure to follow controller/service/repo 
+- add Spring Security with JWT Token
+- implement the FE using NextJS
