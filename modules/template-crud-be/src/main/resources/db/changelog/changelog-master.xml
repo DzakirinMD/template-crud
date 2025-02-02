@@ -4,5 +4,6 @@
                                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <include file="structure/0001-initial-schema.sql" relativeToChangelogFile="true"/>
+    <include file="data/0001-initial-data.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
